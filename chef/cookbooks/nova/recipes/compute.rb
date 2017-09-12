@@ -328,6 +328,20 @@ file "#{node[:nova][:home_dir]}/.ssh/authorized_keys" do
   owner node[:nova][:user]
 end
 
+# set the nested KVM setting
+template "/etc/modprobe.d/80-kvm-intel.conf" do
+  source "kvm-intel-nested.conf.erb"
+  variables(
+    kvm_nested_enabled: node[:nova][:kvm][:nested_virt]
+  )
+  only_if do
+    node[:platform_family] == "suse" &&
+      `uname -r`.include?("default") &&
+      system("grep -qw vmx /proc/cpuinfo")
+  end
+  mode "0644"
+end
+
 template "/usr/sbin/crowbar-compute-set-sys-options" do
   source "crowbar-compute-set-sys-options.erb"
   variables({
