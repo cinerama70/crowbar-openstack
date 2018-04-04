@@ -328,15 +328,6 @@ file "#{node[:nova][:home_dir]}/.ssh/authorized_keys" do
   owner node[:nova][:user]
 end
 
-# enable or disable the ksm setting (performance)
-template "/etc/default/qemu-kvm" do
-  source "qemu-kvm.erb"
-  variables({
-    kvm: node[:nova][:kvm]
-  })
-  mode "0644"
-end if node[:platform_family] == "debian"
-
 template "/usr/sbin/crowbar-compute-set-sys-options" do
   source "crowbar-compute-set-sys-options.erb"
   variables({
